@@ -4,23 +4,6 @@ data "http" "ip" {
   url = "https://ifconfig.me/ip"
 }
 
-resource "azurerm_private_dns_zone" "dns" {
-  for_each            = toset(var.private_dns_zones)
-  name                = each.value
-  resource_group_name = module.rg.name
-  tags                = module.tags.tags
-}
-
-resource "azurerm_private_dns_zone_virtual_network_link" "vnet-link" {
-  depends_on            = [azurerm_private_dns_zone.dns]
-  for_each              = toset(var.private_dns_zones)
-  name                  = "${var.vnet_name}-link"
-  resource_group_name   = module.rg.name
-  private_dns_zone_name = each.value
-  virtual_network_id    = module.virtual_network.id
-  tags                  = module.tags.tags
-}
-
 module "rg" {
   source = "git::https://github.com/sknaresh2000/terraform-azurerm-resource-group.git?ref=main"
   name   = var.resource_group_name
@@ -122,6 +105,23 @@ module "vault-init" {
   tenant_id         = data.azurerm_client_config.current.tenant_id
   cluster_name      = var.vault_cluster_name
   vault_version     = var.vault_version
+}
+
+resource "azurerm_private_dns_zone" "dns" {
+  for_each            = toset(var.private_dns_zones)
+  name                = each.value
+  resource_group_name = module.rg.name
+  tags                = module.tags.tags
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "vnet-link" {
+  depends_on            = [azurerm_private_dns_zone.dns]
+  for_each              = toset(var.private_dns_zones)
+  name                  = "${var.vnet_name}-link"
+  resource_group_name   = module.rg.name
+  private_dns_zone_name = each.value
+  virtual_network_id    = module.virtual_network.id
+  tags                  = module.tags.tags
 }
 
 resource "azurerm_key_vault_key" "vault-key" {
