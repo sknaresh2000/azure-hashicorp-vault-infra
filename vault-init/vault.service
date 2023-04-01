@@ -1,0 +1,11 @@
+[Unit]
+Description="HashiCorp Vault - A tool for managing secrets"
+Documentation=https://www.vaultproject.io/docs/
+
+[Service]
+ExecStart=/usr/bin/vault server -config /etc/vault.d/vault.hcl
+ExecReload=/bin/kill --signal HUP
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
