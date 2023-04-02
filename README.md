@@ -35,6 +35,7 @@
 | [azurerm_key_vault_secret.secret](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/key_vault_secret) | resource |
 | [azurerm_private_dns_zone.dns](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/private_dns_zone) | resource |
 | [azurerm_private_dns_zone_virtual_network_link.vnet-link](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/private_dns_zone_virtual_network_link) | resource |
+| [azurerm_role_assignment.sa_vault_role](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/role_assignment) | resource |
 | [tls_private_key.tls](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/data-sources/client_config) | data source |
 | [http_http.ip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |

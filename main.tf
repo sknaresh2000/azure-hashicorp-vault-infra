@@ -164,6 +164,13 @@ resource "azurerm_key_vault_access_policy" "access_policies" {
   certificate_permissions = each.value.certificate_permissions
 }
 
+resource "azurerm_role_assignment" "sa_vault_role" {
+  for_each             = var.vault_vm_info
+  scope                = module.storage_account.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = module.vault-vm[each.key].principal_id
+}
+
 locals {
   vm_keyvault_access_policies = {
     for k, v in var.vm_keyvault_access_policies : k => merge(v, { object_id = module.vault-vm[k].principal_id })
