@@ -3,12 +3,14 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >=1.2.8 |
+| <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) | =2.36.0 |
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | =3.47.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
+| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | 2.36.0 |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.47.0 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.2.1 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.4 |
@@ -30,13 +32,19 @@
 
 | Name | Type |
 |------|------|
+| [azuread_directory_role.cloudapp-admin](https://registry.terraform.io/providers/hashicorp/azuread/2.36.0/docs/resources/directory_role) | resource |
+| [azuread_directory_role_assignment.vm_vault_role](https://registry.terraform.io/providers/hashicorp/azuread/2.36.0/docs/resources/directory_role_assignment) | resource |
 | [azurerm_key_vault_access_policy.access_policies](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/key_vault_access_policy) | resource |
 | [azurerm_key_vault_key.vault-key](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/key_vault_key) | resource |
 | [azurerm_key_vault_secret.secret](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/key_vault_secret) | resource |
 | [azurerm_private_dns_zone.dns](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/private_dns_zone) | resource |
 | [azurerm_private_dns_zone_virtual_network_link.vnet-link](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/private_dns_zone_virtual_network_link) | resource |
+| [azurerm_role_assignment.sa_vault_role](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/role_assignment) | resource |
+| [azurerm_role_assignment.vm_vault_role](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/role_assignment) | resource |
+| [azurerm_role_definition.vault-role](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/resources/role_definition) | resource |
 | [tls_private_key.tls](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/data-sources/client_config) | data source |
+| [azurerm_subscription.current](https://registry.terraform.io/providers/hashicorp/azurerm/3.47.0/docs/data-sources/subscription) | data source |
 | [http_http.ip](https://registry.terraform.io/providers/hashicorp/http/latest/docs/data-sources/http) | data source |
 
 ## Inputs

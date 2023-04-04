@@ -1,5 +1,7 @@
 data "azurerm_client_config" "current" {}
 
+data "azurerm_subscription" "current" {}
+
 data "http" "ip" {
   url = "https://ifconfig.me/ip"
 }
@@ -164,10 +166,41 @@ resource "azurerm_key_vault_access_policy" "access_policies" {
   certificate_permissions = each.value.certificate_permissions
 }
 
+resource "azurerm_role_definition" "vault-role" {
+  name        = "vault-azure-role"
+  scope       = data.azurerm_subscription.current.id
+  description = "This is a custom role created for vault identity"
+
+  permissions {
+    actions = [
+      "Microsoft.Compute/virtualMachines/*/read",
+      "Microsoft.Compute/virtualMachineScaleSets/*/read",
+      "Microsoft.ManagedIdentity/userAssignedIdentities/*/read"
+    ]
+  }
+}
+
+resource "azuread_directory_role" "cloudapp-admin" {
+  display_name = "Cloud Application Administrator"
+}
+
+resource "azuread_directory_role_assignment" "vm_vault_role" {
+  for_each            = var.vault_vm_info
+  role_id             = azuread_directory_role.cloudapp-admin.template_id
+  principal_object_id = module.vault-vm[each.key].principal_id
+}
+
 resource "azurerm_role_assignment" "sa_vault_role" {
   for_each             = var.vault_vm_info
   scope                = module.storage_account.id
   role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = module.vault-vm[each.key].principal_id
+}
+
+resource "azurerm_role_assignment" "vm_vault_role" {
+  for_each             = var.vault_vm_info
+  scope                = data.azurerm_subscription.current.id
+  role_definition_name = azurerm_role_definition.vault-role.name
   principal_id         = module.vault-vm[each.key].principal_id
 }
 
