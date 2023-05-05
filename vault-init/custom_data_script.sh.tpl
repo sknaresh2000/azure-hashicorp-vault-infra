@@ -26,8 +26,11 @@ echo '${vault_config}' | sed \
 # Configure Vault service
 echo '${vault_service_config}' > /lib/systemd/system/vault.service
 
-# Configure firewall ports 
-firewall-offline-cmd --add-port=8200/tcp
+# Configure firewall ports by placing selinux in permissive mode and move back to enforcing mode
+setenforce 0
+firewall-cmd --permanent --add-port=8200/tcp
+systemctl restart firewalld
+setenforce 1
 
 # Create vault user and group to run the service
 groupadd vault
@@ -44,3 +47,6 @@ chmod 640 /etc/vault.d/vault.hcl
 # Start Vault service
 systemctl start vault
 systemctl enable vault
+
+#Verify service from serial log(optional)
+systemctl status vault

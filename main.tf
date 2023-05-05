@@ -7,18 +7,18 @@ data "http" "ip" {
 }
 
 module "rg" {
-  source = "git::https://github.com/sknaresh2000/terraform-azurerm-resource-group.git?ref=main"
+  source = "git::https://github.com/sknaresh2000/terraform-azurerm-resource-group.git?ref=v0.0.1"
   name   = var.resource_group_name
   tags   = module.tags.tags
 }
 
 module "tags" {
-  source   = "git::https://github.com/sknaresh2000/terraform-azurerm-tags.git?ref=main"
+  source   = "git::https://github.com/sknaresh2000/terraform-azurerm-tags.git?ref=v0.0.1"
   app_name = var.app_name
 }
 
 module "key-vault" {
-  source                        = "git::https://github.com/sknaresh2000/terraform-azurerm-key-vault.git?ref=main"
+  source                        = "git::https://github.com/sknaresh2000/terraform-azurerm-key-vault.git?ref=v0.0.1"
   rg_name                       = module.rg.name
   name                          = var.kv_name
   tags                          = module.tags.tags
@@ -38,7 +38,7 @@ module "key-vault" {
 }
 
 module "virtual_network" {
-  source        = "git::https://github.com/sknaresh2000/terraform-azurerm-virtual-network.git?ref=main"
+  source        = "git::https://github.com/sknaresh2000/terraform-azurerm-virtual-network.git?ref=v0.0.1"
   address_space = [var.vnet_address_prefix]
   name          = var.vnet_name
   rg_name       = module.rg.name
@@ -46,7 +46,7 @@ module "virtual_network" {
 }
 
 module "subnet" {
-  source         = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git"
+  source         = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git?ref=v0.0.1"
   address_prefix = var.subnet_address_prefix
   name           = var.subnet_name
   vnet_rg_name   = module.rg.name
@@ -58,7 +58,7 @@ module "subnet" {
 }
 
 module "storage_account" {
-  source                                = "git::https://github.com/sknaresh2000/terraform-azurerm-storage-account.git?ref=main"
+  source                                = "git::https://github.com/sknaresh2000/terraform-azurerm-storage-account.git?ref=v0.0.1"
   rg_name                               = module.rg.name
   name                                  = var.sa_name
   tags                                  = module.tags.tags
@@ -81,7 +81,7 @@ module "storage_account" {
 
 module "vault-vm" {
   depends_on                      = [module.key-vault]
-  source                          = "git::https://github.com/sknaresh2000/terraform-azurerm-linux-virtual-machine.git?ref=main"
+  source                          = "git::https://github.com/sknaresh2000/terraform-azurerm-linux-virtual-machine.git?ref=v0.0.1"
   for_each                        = var.vault_vm_info
   name                            = each.key
   resource_group_name             = module.rg.name

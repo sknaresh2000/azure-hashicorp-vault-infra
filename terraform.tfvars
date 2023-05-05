@@ -64,4 +64,18 @@ nsgrules = {
     source_address_prefixes      = null
     destination_address_prefixes = null
   }
+  Custom-In = {
+    priority                     = 210
+    direction                    = "Inbound"
+    access                       = "Allow"
+    protocol                     = "Tcp"
+    source_port_range            = "*"
+    destination_port_range       = null
+    source_port_ranges           = null
+    destination_port_ranges      = ["443","8200"]
+    source_address_prefix        = "VirtualNetwork"
+    destination_address_prefix   = "VirtualNetwork"
+    source_address_prefixes      = null
+    destination_address_prefixes = null
+  }
 }
