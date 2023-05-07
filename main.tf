@@ -22,7 +22,7 @@ module "key-vault" {
   rg_name                       = module.rg.name
   name                          = var.kv_name
   tags                          = module.tags.tags
-  private_endpoint_subnet_id    = module.subnet.id
+  private_endpoint_subnet_id    = module.subnet["private-endpoint"].id
   public_network_access_enabled = true
   enable_rbac_authorization     = false
   network_acls = {
@@ -47,14 +47,27 @@ module "virtual_network" {
 
 module "subnet" {
   source         = "git::https://github.com/sknaresh2000/terraform-azurerm-subnets.git?ref=v0.0.1"
-  address_prefix = var.subnet_address_prefix
-  name           = var.subnet_name
+  for_each       = var.subnets_info
+  address_prefix = each.value.address_prefix
+  name           = each.value.name
   vnet_rg_name   = module.rg.name
   vnet_name      = module.virtual_network.name
-  nsg_name       = var.nsg_name
+  nsg_name       = each.value.nsg_info.name
   nsg_rg_name    = module.rg.name
-  nsgrules       = var.nsgrules
+  nsgrules       = each.value.nsg_info.rules
   tags           = module.tags.tags
+}
+
+module "AzureBastion" {
+  source                = "git::https://github.com/sknaresh2000/terraform-azurerm-bastion.git?ref=v0.0.1"
+  name                  = var.bastion_name
+  tags                  = module.tags.tags
+  resource_group_name   = module.rg.name
+  virtual_network_name  = module.virtual_network.name
+  subnet_address_prefix = var.bastion_address_prefix
+  ip_config_name        = var.bastion_ip_config_name
+  pip_name              = var.bastion_pip_name
+  nsg_name              = var.bastion_nsg_name
 }
 
 module "storage_account" {
@@ -62,7 +75,7 @@ module "storage_account" {
   rg_name                               = module.rg.name
   name                                  = var.sa_name
   tags                                  = module.tags.tags
-  private_endpoint_subnet_id            = module.subnet.id
+  private_endpoint_subnet_id            = module.subnet["private-endpoint"].id
   private_endpoint_sa_subresource_names = ["blob"]
   container_info                        = var.sa_containers
   public_network_access_enabled         = true
@@ -92,7 +105,7 @@ module "vault-vm" {
   os_disk_type                    = each.value.os_disk_type
   os_disk_size_gb                 = each.value.os_disk_size_gb
   source_image_reference          = each.value.source_image_reference
-  network_config                  = { for k, v in each.value.nic_config : k => merge(v, { subnet_id = module.subnet.id }) }
+  network_config                  = { for k, v in each.value.nic_config : k => merge(v, { subnet_id = module.subnet["vault"].id }) }
   custom_data_script              = module.vault-init.vault_customdata_base64_encoded
   public_key                      = tls_private_key.tls[each.key].public_key_openssh
   tags                            = module.tags.tags

@@ -39,19 +39,19 @@ variable "vnet_name" {
   description = "Name of the VNET that will be created for Hashicorp Vault"
 }
 
-variable "subnet_address_prefix" {
+variable "bastion_address_prefix" {
   type        = string
-  description = "The address prefix of the subnet that will be created for Vault"
+  description = "The address prefix of the Bastion subnet that will be created for Vault"
 }
 
-variable "subnet_name" {
+variable "bastion_name" {
   type        = string
-  description = "The name of the Vault subnet"
+  description = "The name of Azure Bastion"
 }
 
-variable "nsg_name" {
+variable "bastion_nsg_name" {
   type        = string
-  description = "The name of the NSG that will be created for vault"
+  description = "The name of the NSG that will be created for Azure Bastion"
 }
 
 variable "sa_name" {
@@ -84,20 +84,37 @@ variable "private_dns_zones" {
   description = "List of private dns zones that needs to be created for vault backend and keys in Azure."
 }
 
-variable "nsgrules" {
+variable "bastion_ip_config_name" {
+  type        = string
+  description = "Azure Bastion IP Config name"
+}
+
+variable "bastion_pip_name" {
+  type        = string
+  description = "Public ip name to be used for Azure Bastion"
+}
+
+variable "subnets_info" {
   type = map(object({
-    priority                     = number
-    direction                    = string
-    access                       = string
-    protocol                     = string
-    source_port_range            = string
-    destination_port_range       = string
-    source_port_ranges           = list(string)
-    destination_port_ranges      = list(string)
-    source_address_prefix        = string
-    destination_address_prefix   = string
-    source_address_prefixes      = list(string)
-    destination_address_prefixes = list(string)
+    address_prefix = string
+    name           = string
+    nsg_info = object({
+      name = string
+      rules = map(object({
+        priority                     = number
+        direction                    = string
+        access                       = string
+        protocol                     = string
+        source_port_range            = string
+        destination_port_range       = string
+        source_port_ranges           = list(string)
+        destination_port_ranges      = list(string)
+        source_address_prefix        = string
+        destination_address_prefix   = string
+        source_address_prefixes      = list(string)
+        destination_address_prefixes = list(string)
+      }))
+    })
   }))
-  description = "List of nsg rules that will be applied to the subnet."
+  description = "Details of the subnets and its associated NSG that will be created for vault"
 }
