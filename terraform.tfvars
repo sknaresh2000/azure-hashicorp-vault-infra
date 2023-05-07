@@ -1,15 +1,17 @@
-vault_cluster_name    = "hcpvault"
-vault_version         = "1.13.0"
-resource_group_name   = "rg-vault-eus"
-kv_name               = "kv-vault-01-eus"
-key_name              = "key-hashicorp-vault-master"
-vnet_address_prefix   = "10.0.0.0/24"
-vnet_name             = "vnet-vault-01-eus"
-subnet_address_prefix = "10.0.0.0/27"
-subnet_name           = "sn-vault-01-eus"
-nsg_name              = "nsg-vault-01-eus"
-sa_name               = "savaulteus01"
-private_dns_zones     = ["privatelink.vaultcore.azure.net", "privatelink.blob.core.windows.net"]
+vault_cluster_name     = "hcpvault"
+vault_version          = "1.13.0"
+resource_group_name    = "rg-vault-eus"
+kv_name                = "kv-vault-01-eus"
+key_name               = "key-hashicorp-vault-master"
+vnet_address_prefix    = "10.0.0.0/24"
+vnet_name              = "vnet-vault-01-eus"
+sa_name                = "savaulteus01"
+private_dns_zones      = ["privatelink.vaultcore.azure.net", "privatelink.blob.core.windows.net"]
+bastion_name           = "bastion-vault-01-eus"
+bastion_address_prefix = "10.0.0.0/27"
+bastion_ip_config_name = "ipc-bastion-vault-01-eus"
+bastion_pip_name       = "pip-bastion-vault-01-eus"
+bastion_nsg_name       = "nsg-bastion-vault-01-eus"
 vm_keyvault_access_policies = {
   azvaultvm01 = {
     key_permissions         = ["Get", "WrapKey", "UnwrapKey"]
@@ -20,6 +22,96 @@ vm_keyvault_access_policies = {
 sa_containers = {
   vault = {
     access_type = "private"
+  }
+}
+subnets_info = {
+  vault = {
+    address_prefix = "10.0.0.32/27"
+    name           = "sn-vault-01-eus"
+    nsg_info = {
+      name = "nsg-vault-01-eus"
+      rules = {
+        Internet-Out = {
+          priority                     = 210
+          direction                    = "Outbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = "443"
+          source_port_ranges           = null
+          destination_port_ranges      = null
+          source_address_prefix        = "10.0.0.32/27"
+          destination_address_prefix   = "Internet"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+        Vault-Backend-Out = {
+          priority                     = 220
+          direction                    = "Outbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = "443"
+          source_port_ranges           = null
+          destination_port_ranges      = null
+          source_address_prefix        = "10.0.0.32/27"
+          destination_address_prefix   = "10.0.0.64/27"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+        Runner-In = {
+          priority                     = 210
+          direction                    = "Inbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = null
+          source_port_ranges           = null
+          destination_port_ranges      = ["443", "8200"]
+          source_address_prefix        = "VirtualNetwork"
+          destination_address_prefix   = "10.0.0.32/27"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+        AzureBastion-SSH-In = {
+          priority                     = 220
+          direction                    = "Inbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = null
+          source_port_ranges           = null
+          destination_port_ranges      = ["22"]
+          source_address_prefix        = "10.0.0.0/27"
+          destination_address_prefix   = "10.0.0.32/27"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+      }
+    }
+  }
+  private-endpoint = {
+    address_prefix = "10.0.0.64/27"
+    name           = "sn-pe-01-eus"
+    nsg_info = {
+      name = "nsg-pe-01-eus"
+      rules = {
+        Vault-In = {
+          priority                     = 210
+          direction                    = "Inbound"
+          access                       = "Allow"
+          protocol                     = "Tcp"
+          source_port_range            = "*"
+          destination_port_range       = null
+          source_port_ranges           = null
+          destination_port_ranges      = ["443"]
+          source_address_prefix        = "10.0.0.32/27"
+          destination_address_prefix   = "10.0.0.64/27"
+          source_address_prefixes      = null
+          destination_address_prefixes = null
+        }
+      }
+    }
   }
 }
 vault_vm_info = {
@@ -47,35 +139,5 @@ vault_vm_info = {
         private_ip_address_allocation = "Dynamic"
       }
     }
-  }
-}
-nsgrules = {
-  Internet-Out = {
-    priority                     = 210
-    direction                    = "Outbound"
-    access                       = "Allow"
-    protocol                     = "Tcp"
-    source_port_range            = "*"
-    destination_port_range       = "443"
-    source_port_ranges           = null
-    destination_port_ranges      = null
-    source_address_prefix        = "*"
-    destination_address_prefix   = "Internet"
-    source_address_prefixes      = null
-    destination_address_prefixes = null
-  }
-  Custom-In = {
-    priority                     = 210
-    direction                    = "Inbound"
-    access                       = "Allow"
-    protocol                     = "Tcp"
-    source_port_range            = "*"
-    destination_port_range       = null
-    source_port_ranges           = null
-    destination_port_ranges      = ["443","8200"]
-    source_address_prefix        = "VirtualNetwork"
-    destination_address_prefix   = "VirtualNetwork"
-    source_address_prefixes      = null
-    destination_address_prefixes = null
   }
 }
